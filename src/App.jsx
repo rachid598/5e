@@ -3,6 +3,7 @@ import usePlayer from './hooks/usePlayer'
 import PlayerForm from './components/PlayerForm'
 import Hub from './pages/Hub'
 import FracStrike from './modules/frac-strike/FracStrike'
+import FractionsIdeas from './pages/FractionsIdeas'
 
 export default function App() {
   const { player, savePlayer, clearPlayer } = usePlayer()
@@ -16,6 +17,10 @@ export default function App() {
   // Inside a module
   if (currentModule === 'frac-strike') {
     return <FracStrike onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'fractions-ideas') {
+    return <FractionsIdeas onBack={() => setCurrentModule(null)} />
   }
 
   // Hub
