@@ -15,7 +15,7 @@ export default function CompletionInput({
   const [numField, setNumField] = useState('')
   const [divField, setDivField] = useState('')
   const [denField, setDenField] = useState('')
-  const [activeField, setActiveField] = useState('num')
+  const [activeField, setActiveField] = useState('div')
   const [error, setError] = useState(null)
   const errorTimeout = useRef(null)
 
@@ -77,7 +77,7 @@ export default function CompletionInput({
     setNumField('')
     setDivField('')
     setDenField('')
-    setActiveField('num')
+    setActiveField('div')
     setError(null)
   }, [numerator, denominator])
 
@@ -161,8 +161,8 @@ export default function CompletionInput({
       {/* Field tabs */}
       <div className="flex gap-2 mb-3 justify-center">
         {[
-          { key: 'num', label: 'Numérateur' },
           { key: 'div', label: 'Diviseur' },
+          { key: 'num', label: 'Numérateur' },
           { key: 'den', label: 'Dénominateur' },
         ].map(({ key, label }) => (
           <button
