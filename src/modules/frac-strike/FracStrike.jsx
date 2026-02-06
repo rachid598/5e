@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ArrowLeft, Trophy, RotateCcw, Star, Zap } from 'lucide-react'
+import { ArrowLeft, Trophy, RotateCcw, Star, Zap, PenLine } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import {
   generateFraction,
@@ -12,6 +12,7 @@ import {
 } from './engine'
 import Chain from './components/Chain'
 import Keypad from './components/Keypad'
+import CompletionInput from './components/CompletionInput'
 
 const PROBLEMS_PER_LEVEL = 5
 
@@ -31,6 +32,7 @@ function LevelSelector({ onSelect }) {
               {level.id === 1 && <Star className="w-5 h-5 text-white" />}
               {level.id === 2 && <Zap className="w-5 h-5 text-white" />}
               {level.id === 3 && <Trophy className="w-5 h-5 text-white" />}
+              {level.id === 4 && <PenLine className="w-5 h-5 text-white" />}
             </div>
             <div>
               <p className="font-semibold">{level.name}</p>
@@ -189,6 +191,87 @@ export default function FracStrike({ onBack }) {
     }
   }
 
+  // Expert mode: student completed the decomposition themselves
+  function handleExpertCorrect(numResult, divisor, denResult) {
+    if (animating) return
+    clearTimeout(feedbackTimeout.current)
+
+    setAnimating(true)
+
+    // Step 1: Show decomposition (not struck yet)
+    setChain((prev) => [
+      ...prev,
+      {
+        type: 'decomposed',
+        factorNum: numResult,
+        factorDen: denResult,
+        divisor,
+        struck: false,
+      },
+    ])
+
+    // Step 2: Auto-strike after delay
+    setTimeout(() => {
+      setChain((prev) => {
+        const updated = [...prev]
+        const last = { ...updated[updated.length - 1] }
+        last.struck = true
+        updated[updated.length - 1] = last
+        return updated
+      })
+    }, 400)
+
+    // Step 3: Show simplified result
+    setTimeout(() => {
+      const newNum = numResult
+      const newDen = denResult
+      const fullyDone = isFullySimplified(newNum, newDen)
+
+      setChain((prev) => [
+        ...prev,
+        {
+          type: 'simplified',
+          numerator: newNum,
+          denominator: newDen,
+          final: fullyDone,
+        },
+      ])
+
+      setCurrentNum(newNum)
+      setCurrentDen(newDen)
+      setKeypadValue('')
+
+      if (fullyDone) {
+        setFeedback({ type: 'success', message: 'Fraction irréductible !' })
+        setScore((s) => s + 1)
+
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.7 },
+          colors: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
+        })
+
+        setTimeout(() => {
+          const nextIndex = problemIndex + 1
+          if (nextIndex >= PROBLEMS_PER_LEVEL) {
+            setShowResult(true)
+          } else {
+            setProblemIndex(nextIndex)
+            startProblem(levelId)
+          }
+        }, 2000)
+      } else {
+        setFeedback({ type: 'info', message: 'Continue à simplifier !' })
+        feedbackTimeout.current = setTimeout(() => setFeedback(null), 1500)
+      }
+
+      setAnimating(false)
+    }, 900)
+  }
+
+  const isExpert = getLevels().find((l) => l.id === levelId)?.expert
+
   // Cleanup timeouts
   useEffect(() => {
     return () => clearTimeout(feedbackTimeout.current)
@@ -331,8 +414,8 @@ export default function FracStrike({ onBack }) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Hint button */}
-      {!isFullySimplified(currentNum, currentDen) && (
+      {/* Hint button (not in expert mode) */}
+      {!isFullySimplified(currentNum, currentDen) && !isExpert && (
         <button
           onClick={handleHint}
           className="mb-3 mx-auto text-sm text-slate-500 hover:text-slate-300 transition-colors"
@@ -341,14 +424,23 @@ export default function FracStrike({ onBack }) {
         </button>
       )}
 
-      {/* Keypad */}
+      {/* Input: Keypad (normal) or CompletionInput (expert) */}
       {!isFullySimplified(currentNum, currentDen) && (
-        <Keypad
-          value={keypadValue}
-          onChange={setKeypadValue}
-          onSubmit={handleSubmit}
-          disabled={animating}
-        />
+        isExpert ? (
+          <CompletionInput
+            numerator={currentNum}
+            denominator={currentDen}
+            onCorrect={handleExpertCorrect}
+            disabled={animating}
+          />
+        ) : (
+          <Keypad
+            value={keypadValue}
+            onChange={setKeypadValue}
+            onSubmit={handleSubmit}
+            disabled={animating}
+          />
+        )
       )}
 
       {/* Bottom padding for mobile */}

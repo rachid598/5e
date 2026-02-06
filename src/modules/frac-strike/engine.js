@@ -39,6 +39,15 @@ const LEVELS = [
     numRange: [1, 10],
     denRange: [2, 12],
   },
+  {
+    id: 4,
+    name: 'Expert',
+    description: 'Complète la décomposition toi-même !',
+    factors: [2, 3, 4, 5, 6, 7, 8, 9, 10],
+    numRange: [1, 14],
+    denRange: [2, 18],
+    expert: true,
+  },
 ]
 
 export function getLevels() {
