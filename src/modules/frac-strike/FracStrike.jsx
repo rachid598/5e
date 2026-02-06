@@ -3,6 +3,7 @@ import { ArrowLeft, Trophy, RotateCcw, Star, Zap } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import {
   generateFraction,
+  resetDeck,
   isValidDivisor,
   simplify,
   isFullySimplified,
@@ -73,6 +74,7 @@ export default function FracStrike({ onBack }) {
   )
 
   function selectLevel(id) {
+    resetDeck(id)
     setLevelId(id)
     setScore(0)
     setProblemIndex(0)

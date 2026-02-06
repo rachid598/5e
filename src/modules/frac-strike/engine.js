@@ -20,21 +20,24 @@ const LEVELS = [
     name: 'Niveau 1',
     description: 'Tables de 2, 5 et 10',
     factors: [2, 5, 10],
-    maxMultiplier: 6,
+    numRange: [1, 11],
+    denRange: [2, 15],
   },
   {
     id: 2,
     name: 'Niveau 2',
     description: 'Tables de 3 à 9',
     factors: [3, 4, 6, 7, 8, 9],
-    maxMultiplier: 8,
+    numRange: [1, 14],
+    denRange: [2, 18],
   },
   {
     id: 3,
     name: 'Niveau 3',
     description: 'Multiples complexes',
     factors: [12, 15, 25, 50],
-    maxMultiplier: 6,
+    numRange: [1, 10],
+    denRange: [2, 12],
   },
 ]
 
@@ -43,34 +46,65 @@ export function getLevels() {
 }
 
 /**
+ * Build all valid coprime pairs (num < den, gcd=1) for a level's range.
+ * This gives us a large pool to pick from without repetition.
+ */
+function buildPairsPool(level) {
+  const [numMin, numMax] = level.numRange
+  const [denMin, denMax] = level.denRange
+  const pairs = []
+  for (let n = numMin; n <= numMax; n++) {
+    for (let d = Math.max(denMin, n + 1); d <= denMax; d++) {
+      if (gcd(n, d) === 1) {
+        pairs.push([n, d])
+      }
+    }
+  }
+  return pairs
+}
+
+// Pre-compute pools per level
+const pairsPoolCache = new Map()
+function getPairsPool(level) {
+  if (!pairsPoolCache.has(level.id)) {
+    pairsPoolCache.set(level.id, buildPairsPool(level))
+  }
+  return pairsPoolCache.get(level.id)
+}
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+// Per-level shuffled deck to avoid repeats within a session
+const decks = new Map()
+
+function drawPair(level) {
+  if (!decks.has(level.id) || decks.get(level.id).length === 0) {
+    decks.set(level.id, shuffle(getPairsPool(level)))
+  }
+  return decks.get(level.id).pop()
+}
+
+/**
  * Generate a fraction that can be simplified.
+ * Uses a shuffled deck so fractions never repeat until the pool is exhausted.
  * Returns { numerator, denominator, simplifiedNum, simplifiedDen, commonFactor }
  */
 export function generateFraction(levelId) {
   const level = LEVELS.find((l) => l.id === levelId) || LEVELS[0]
-  const { factors, maxMultiplier } = level
+
+  // Pick a coprime pair from the shuffled deck
+  const [simplifiedNum, simplifiedDen] = drawPair(level)
 
   // Pick a random common factor from the level's factor pool
-  const factor = factors[Math.floor(Math.random() * factors.length)]
-
-  // Generate a simplified fraction where num < den (proper fraction) and gcd=1
-  let simplifiedNum, simplifiedDen
-  let attempts = 0
-  do {
-    simplifiedNum = Math.floor(Math.random() * (maxMultiplier - 1)) + 1
-    simplifiedDen = Math.floor(Math.random() * (maxMultiplier - 1)) + 2
-    attempts++
-  } while (
-    (simplifiedNum >= simplifiedDen ||
-      gcd(simplifiedNum, simplifiedDen) !== 1) &&
-    attempts < 100
-  )
-
-  // Fallback to a safe pair
-  if (attempts >= 100) {
-    simplifiedNum = 1
-    simplifiedDen = 3
-  }
+  const factor = level.factors[Math.floor(Math.random() * level.factors.length)]
 
   return {
     numerator: simplifiedNum * factor,
@@ -79,6 +113,11 @@ export function generateFraction(levelId) {
     simplifiedDen,
     commonFactor: factor,
   }
+}
+
+/** Reset the deck for a level (e.g. when restarting) */
+export function resetDeck(levelId) {
+  decks.delete(levelId)
 }
 
 /**
