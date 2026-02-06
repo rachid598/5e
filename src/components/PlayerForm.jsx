@@ -35,7 +35,7 @@ export default function PlayerForm({ onSave }) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Ex : Rachid"
+          placeholder="Ton prénom"
           maxLength={30}
           autoComplete="given-name"
           className="w-full mb-4 px-4 py-3 rounded-xl bg-surface-light text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-primary"
