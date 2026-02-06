@@ -2,6 +2,14 @@ import { Swords, Shapes, BarChart3, Puzzle, LogOut } from 'lucide-react'
 
 const modules = [
   {
+    id: 'fractions-ideas',
+    title: 'Fractions — Idées',
+    description: 'Activités concrètes, séquence et exercices.',
+    icon: Puzzle,
+    color: 'from-pink-500 to-rose-600',
+    active: true,
+  },
+  {
     id: 'frac-strike',
     title: 'Frac-Strike',
     description: 'Simplifie les fractions en trouvant les diviseurs communs !',
