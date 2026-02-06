@@ -194,9 +194,9 @@ export default function FracStrike({ onBack }) {
     return () => clearTimeout(feedbackTimeout.current)
   }, [])
 
-  // End-of-level result screen
-  if (showResult) {
-    const perfect = score === PROBLEMS_PER_LEVEL
+  // Confetti on perfect score — must be in useEffect, not render body
+  const perfect = showResult && score === PROBLEMS_PER_LEVEL
+  useEffect(() => {
     if (perfect) {
       confetti({
         particleCount: 200,
@@ -205,7 +205,10 @@ export default function FracStrike({ onBack }) {
         colors: ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#ec4899'],
       })
     }
+  }, [perfect])
 
+  // End-of-level result screen
+  if (showResult) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="bg-surface rounded-2xl p-8 max-w-sm w-full text-center">

@@ -15,7 +15,7 @@
   Cache-Control: no-cache
   Service-Worker-Allowed: /
 
-/workbox-*.js
+/workbox-*
   Cache-Control: no-cache
 
 /manifest.webmanifest
