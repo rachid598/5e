@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ArrowLeft, Trophy, RotateCcw, Star, Zap, HelpCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Trophy, RotateCcw, Star, Zap, HelpCircle } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import {
   generateExpression,
@@ -57,6 +57,7 @@ export default function PrioCalcul({ onBack }) {
   const [showHelp, setShowHelp] = useState(false)
   const [phase, setPhase] = useState('select') // 'select' | 'compute'
   const [waiting, setWaiting] = useState(false)
+  const [solved, setSolved] = useState(false)
   const feedbackTimeout = useRef(null)
 
   const selectableOps = tokens.length > 0 ? findSelectableOps(tokens) : []
@@ -71,6 +72,7 @@ export default function PrioCalcul({ onBack }) {
       setFeedback(null)
       setPhase('select')
       setWaiting(false)
+      setSolved(false)
     },
     [levelId],
   )
@@ -135,9 +137,10 @@ export default function PrioCalcul({ onBack }) {
     setKeypadValue('')
 
     if (isComplete(newTokens)) {
-      // Problem solved!
+      // Problem solved! Let student review before advancing
       setFeedback({ type: 'success', message: 'Bravo !' })
       setScore((s) => s + 1)
+      setSolved(true)
 
       confetti({
         particleCount: 80,
@@ -145,21 +148,21 @@ export default function PrioCalcul({ onBack }) {
         origin: { y: 0.7 },
         colors: ['#06b6d4', '#3b82f6', '#10b981', '#f59e0b'],
       })
-
-      setTimeout(() => {
-        const nextIndex = problemIndex + 1
-        if (nextIndex >= PROBLEMS_PER_LEVEL) {
-          setShowResult(true)
-        } else {
-          setProblemIndex(nextIndex)
-          startProblem(levelId)
-        }
-      }, 2000)
     } else {
       setFeedback({ type: 'info', message: 'Étape suivante !' })
       feedbackTimeout.current = setTimeout(() => setFeedback(null), 1500)
       setPhase('select')
       setWaiting(false)
+    }
+  }
+
+  function handleNext() {
+    const nextIndex = problemIndex + 1
+    if (nextIndex >= PROBLEMS_PER_LEVEL) {
+      setShowResult(true)
+    } else {
+      setProblemIndex(nextIndex)
+      startProblem(levelId)
     }
   }
 
@@ -325,6 +328,17 @@ export default function PrioCalcul({ onBack }) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* "Suivant" button when expression is solved */}
+      {solved && (
+        <button
+          onClick={handleNext}
+          className="mx-auto mb-4 px-8 py-3 rounded-xl font-bold text-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 active:scale-[0.97] transition-all text-white flex items-center gap-2"
+        >
+          Suivant
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Keypad (only in compute phase, when not complete) */}
       {phase === 'compute' && !isComplete(tokens) && (
