@@ -112,26 +112,36 @@ export default function CompletionInput({
                   type="text"
                   inputMode="numeric"
                   readOnly
-                  value={numField}
-                  onFocus={() => setActiveField('num')}
-                  onClick={() => setActiveField('num')}
-                  placeholder="?"
-                  className={fieldStyle('num')}
-                />
-                <span className="text-slate-500">&times;</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  readOnly
                   value={divField}
                   onFocus={() => setActiveField('div')}
                   onClick={() => setActiveField('div')}
                   placeholder="?"
                   className={fieldStyle('div')}
                 />
+                <span className="text-slate-500">&times;</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  readOnly
+                  value={numField}
+                  onFocus={() => setActiveField('num')}
+                  onClick={() => setActiveField('num')}
+                  placeholder="?"
+                  className={fieldStyle('num')}
+                />
               </span>
               <span className="bar" />
               <span className="den flex items-center gap-1">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  readOnly
+                  value={divField}
+                  className="w-12 h-10 rounded-lg text-center text-lg font-bold bg-surface-light/50 text-slate-500 outline-none"
+                  disabled
+                  placeholder="?"
+                />
+                <span className="text-slate-500">&times;</span>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -141,16 +151,6 @@ export default function CompletionInput({
                   onClick={() => setActiveField('den')}
                   placeholder="?"
                   className={fieldStyle('den')}
-                />
-                <span className="text-slate-500">&times;</span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  readOnly
-                  value={divField}
-                  className="w-12 h-10 rounded-lg text-center text-lg font-bold bg-surface-light/50 text-slate-500 outline-none"
-                  disabled
-                  placeholder="?"
                 />
               </span>
             </span>
