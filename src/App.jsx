@@ -3,6 +3,7 @@ import usePlayer from './hooks/usePlayer'
 import PlayerForm from './components/PlayerForm'
 import Hub from './pages/Hub'
 import FracStrike from './modules/frac-strike/FracStrike'
+import PrioCalcul from './modules/prio-calcul/PrioCalcul'
 
 export default function App() {
   const { player, savePlayer, clearPlayer } = usePlayer()
@@ -16,6 +17,10 @@ export default function App() {
   // Inside a module
   if (currentModule === 'frac-strike') {
     return <FracStrike onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'prio-calcul') {
+    return <PrioCalcul onBack={() => setCurrentModule(null)} />
   }
 
   // Hub

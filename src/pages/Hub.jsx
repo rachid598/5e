@@ -1,4 +1,4 @@
-import { Swords, Shapes, BarChart3, Puzzle, LogOut } from 'lucide-react'
+import { Swords, Calculator, Shapes, BarChart3, Puzzle, LogOut } from 'lucide-react'
 
 const modules = [
   {
@@ -10,12 +10,12 @@ const modules = [
     active: true,
   },
   {
-    id: 'geo-quest',
-    title: 'Géo-Quest',
-    description: 'Explore les figures géométriques et leurs propriétés.',
-    icon: Shapes,
-    color: 'from-emerald-500 to-teal-600',
-    active: false,
+    id: 'prio-calcul',
+    title: 'Prio-Calcul',
+    description: 'Maîtrise la priorité des opérations !',
+    icon: Calculator,
+    color: 'from-cyan-500 to-blue-600',
+    active: true,
   },
   {
     id: 'stat-lab',
