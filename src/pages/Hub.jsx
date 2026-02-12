@@ -1,4 +1,4 @@
-import { Swords, Calculator, Shapes, BarChart3, Puzzle, LogOut } from 'lucide-react'
+import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut } from 'lucide-react'
 
 const modules = [
   {
@@ -18,12 +18,12 @@ const modules = [
     active: true,
   },
   {
-    id: 'stat-lab',
-    title: 'Stat-Lab',
-    description: 'Analyse des données et crée des diagrammes.',
-    icon: BarChart3,
-    color: 'from-amber-500 to-orange-600',
-    active: false,
+    id: 'divi-check',
+    title: 'Divi-Check',
+    description: 'Maîtrise les critères de divisibilité !',
+    icon: Grid3X3,
+    color: 'from-emerald-500 to-teal-600',
+    active: true,
   },
   {
     id: 'calc-puzzle',

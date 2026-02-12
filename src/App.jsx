@@ -4,6 +4,7 @@ import PlayerForm from './components/PlayerForm'
 import Hub from './pages/Hub'
 import FracStrike from './modules/frac-strike/FracStrike'
 import PrioCalcul from './modules/prio-calcul/PrioCalcul'
+import DiviCheck from './modules/divi-check/DiviCheck'
 
 export default function App() {
   const { player, savePlayer, clearPlayer } = usePlayer()
@@ -21,6 +22,10 @@ export default function App() {
 
   if (currentModule === 'prio-calcul') {
     return <PrioCalcul onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'divi-check') {
+    return <DiviCheck onBack={() => setCurrentModule(null)} />
   }
 
   // Hub
