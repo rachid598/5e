@@ -1,4 +1,4 @@
-import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut } from 'lucide-react'
+import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut, Scale, Box } from 'lucide-react'
 
 const modules = [
   {
@@ -26,12 +26,20 @@ const modules = [
     active: true,
   },
   {
-    id: 'calc-puzzle',
-    title: 'Calc-Puzzle',
-    description: 'Résous des énigmes de calcul mental.',
-    icon: Puzzle,
+    id: 'proportionnalite',
+    title: 'Proportionnalité',
+    description: 'Tableaux de proportionnalité & produits en croix',
+    icon: Scale,
+    color: 'from-amber-500 to-orange-600',
+    active: true,
+  },
+  {
+    id: 'volumes-aires',
+    title: 'Volumes & Aires',
+    description: 'Calcule aires et volumes avec visualisation 3D',
+    icon: Box,
     color: 'from-pink-500 to-rose-600',
-    active: false,
+    active: true,
   },
 ]
 

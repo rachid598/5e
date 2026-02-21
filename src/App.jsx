@@ -5,6 +5,8 @@ import Hub from './pages/Hub'
 import FracStrike from './modules/frac-strike/FracStrike'
 import PrioCalcul from './modules/prio-calcul/PrioCalcul'
 import DiviCheck from './modules/divi-check/DiviCheck'
+import Proportionnalite from './modules/Proportionnalite/Proportionnalite'
+import VolumesAires from './modules/VolumesAires/VolumesAires'
 
 export default function App() {
   const { player, savePlayer, clearPlayer } = usePlayer()
@@ -26,6 +28,14 @@ export default function App() {
 
   if (currentModule === 'divi-check') {
     return <DiviCheck onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'proportionnalite') {
+    return <Proportionnalite onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'volumes-aires') {
+    return <VolumesAires onBack={() => setCurrentModule(null)} />
   }
 
   // Hub
