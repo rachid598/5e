@@ -1,4 +1,4 @@
-import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut, Scale, Box, Divide } from 'lucide-react'
+import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut, Scale, Box } from 'lucide-react'
 
 const modules = [
   {
@@ -39,14 +39,6 @@ const modules = [
     description: 'Calcule aires et volumes avec visualisation 3D',
     icon: Box,
     color: 'from-pink-500 to-rose-600',
-    active: true,
-  },
-  {
-    id: 'euclide',
-    title: 'Euclide',
-    description: 'Division euclidienne posée & vocabulaire',
-    icon: Divide,
-    color: 'from-violet-500 to-fuchsia-600',
     active: true,
   },
 ]
