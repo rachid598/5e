@@ -7,6 +7,7 @@ import PrioCalcul from './modules/prio-calcul/PrioCalcul'
 import DiviCheck from './modules/divi-check/DiviCheck'
 import Proportionnalite from './modules/Proportionnalite/Proportionnalite'
 import VolumesAires from './modules/VolumesAires/VolumesAires'
+import Euclide from './modules/euclide/Euclide'
 
 export default function App() {
   const { player, savePlayer, clearPlayer } = usePlayer()
@@ -36,6 +37,10 @@ export default function App() {
 
   if (currentModule === 'volumes-aires') {
     return <VolumesAires onBack={() => setCurrentModule(null)} />
+  }
+
+  if (currentModule === 'euclide') {
+    return <Euclide onBack={() => setCurrentModule(null)} />
   }
 
   // Hub
