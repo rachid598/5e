@@ -1,4 +1,4 @@
-import { Swords, Shapes, BarChart3, Puzzle, LogOut } from 'lucide-react'
+import { Swords, Calculator, Grid3X3, BarChart3, Puzzle, LogOut, Scale, Box } from 'lucide-react'
 
 const modules = [
   {
@@ -15,29 +15,37 @@ const modules = [
     description: 'Simplifie les fractions en trouvant les diviseurs communs !',
     icon: Swords,
     color: 'from-indigo-500 to-purple-600',
+    active: false,
+  },
+  {
+    id: 'prio-calcul',
+    title: 'Prio-Calcul',
+    description: 'Maîtrise la priorité des opérations !',
+    icon: Calculator,
+    color: 'from-cyan-500 to-blue-600',
     active: true,
   },
   {
-    id: 'geo-quest',
-    title: 'Géo-Quest',
-    description: 'Explore les figures géométriques et leurs propriétés.',
-    icon: Shapes,
+    id: 'divi-check',
+    title: 'Divi-Check',
+    description: 'Maîtrise les critères de divisibilité !',
+    icon: Grid3X3,
     color: 'from-emerald-500 to-teal-600',
     active: false,
   },
   {
-    id: 'stat-lab',
-    title: 'Stat-Lab',
-    description: 'Analyse des données et crée des diagrammes.',
-    icon: BarChart3,
+    id: 'proportionnalite',
+    title: 'Proportionnalité',
+    description: 'Tableaux de proportionnalité & produits en croix',
+    icon: Scale,
     color: 'from-amber-500 to-orange-600',
     active: false,
   },
   {
-    id: 'calc-puzzle',
-    title: 'Calc-Puzzle',
-    description: 'Résous des énigmes de calcul mental.',
-    icon: Puzzle,
+    id: 'volumes-aires',
+    title: 'Volumes & Aires',
+    description: 'Calcule aires et volumes avec visualisation 3D',
+    icon: Box,
     color: 'from-pink-500 to-rose-600',
     active: false,
   },
@@ -67,7 +75,7 @@ export default function Hub({ player, onNavigate, onLogout }) {
 
       {/* Module grid */}
       <div className="grid gap-4">
-        {modules.map((mod) => {
+        {modules.filter((mod) => mod.active).map((mod) => {
           const Icon = mod.icon
           return (
             <button

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { UserCircle } from 'lucide-react'
 
-const CLASSES = ['5eA', '5eB', '5eC', '5eD', '5eE', '5eF']
+const CLASSES = ['5G2']
 
 export default function PlayerForm({ onSave }) {
   const [name, setName] = useState('')
-  const [classe, setClasse] = useState('')
+  const [classe, setClasse] = useState(CLASSES[0])
 
   const canSubmit = name.trim().length >= 2 && classe
 
@@ -44,7 +44,7 @@ export default function PlayerForm({ onSave }) {
         <label className="block mb-2 text-sm font-medium text-slate-300">
           Ta classe
         </label>
-        <div className="grid grid-cols-3 gap-2 mb-6">
+        <div className="grid grid-cols-1 gap-2 mb-6">
           {CLASSES.map((c) => (
             <button
               key={c}

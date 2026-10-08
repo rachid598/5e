@@ -16,19 +16,19 @@ export default function Fraction({
     return (
       <span className={`frac ${size}`}>
         <span className="num flex items-center gap-0.5">
-          <span>{factorNum}</span>
-          <span className="text-slate-500 mx-0.5">&times;</span>
           <span className={struck ? 'strike-anim text-danger' : 'text-primary-light'}>
             {divisor}
           </span>
+          <span className="text-slate-500 mx-0.5">&times;</span>
+          <span>{factorNum}</span>
         </span>
         <span className="bar" />
         <span className="den flex items-center gap-0.5">
-          <span>{factorDen}</span>
-          <span className="text-slate-500 mx-0.5">&times;</span>
           <span className={struck ? 'strike-anim text-danger' : 'text-primary-light'}>
             {divisor}
           </span>
+          <span className="text-slate-500 mx-0.5">&times;</span>
+          <span>{factorDen}</span>
         </span>
       </span>
     )

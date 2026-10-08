@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ArrowLeft, Trophy, RotateCcw, Star, Zap, PenLine } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Trophy, RotateCcw, Star, Zap, PenLine } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import {
   generateFraction,
@@ -57,6 +57,7 @@ export default function FracStrike({ onBack }) {
   const [problemIndex, setProblemIndex] = useState(0)
   const [showResult, setShowResult] = useState(false)
   const [animating, setAnimating] = useState(false)
+  const [solved, setSolved] = useState(false)
   const feedbackTimeout = useRef(null)
 
   const startProblem = useCallback(
@@ -71,6 +72,7 @@ export default function FracStrike({ onBack }) {
       setKeypadValue('')
       setFeedback(null)
       setAnimating(false)
+      setSolved(false)
     },
     [levelId],
   )
@@ -149,25 +151,14 @@ export default function FracStrike({ onBack }) {
       if (fullyDone) {
         setFeedback({ type: 'success', message: 'Fraction irréductible !' })
         setScore((s) => s + 1)
+        setSolved(true)
 
-        // Confetti on success
         confetti({
           particleCount: 80,
           spread: 60,
           origin: { y: 0.7 },
           colors: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
         })
-
-        // Move to next problem or show results after delay
-        setTimeout(() => {
-          const nextIndex = problemIndex + 1
-          if (nextIndex >= PROBLEMS_PER_LEVEL) {
-            setShowResult(true)
-          } else {
-            setProblemIndex(nextIndex)
-            startProblem(levelId)
-          }
-        }, 2000)
       } else {
         setFeedback({ type: 'info', message: 'Continue à simplifier !' })
         feedbackTimeout.current = setTimeout(() => setFeedback(null), 1500)
@@ -244,6 +235,7 @@ export default function FracStrike({ onBack }) {
       if (fullyDone) {
         setFeedback({ type: 'success', message: 'Fraction irréductible !' })
         setScore((s) => s + 1)
+        setSolved(true)
 
         confetti({
           particleCount: 80,
@@ -251,16 +243,6 @@ export default function FracStrike({ onBack }) {
           origin: { y: 0.7 },
           colors: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
         })
-
-        setTimeout(() => {
-          const nextIndex = problemIndex + 1
-          if (nextIndex >= PROBLEMS_PER_LEVEL) {
-            setShowResult(true)
-          } else {
-            setProblemIndex(nextIndex)
-            startProblem(levelId)
-          }
-        }, 2000)
       } else {
         setFeedback({ type: 'info', message: 'Continue à simplifier !' })
         feedbackTimeout.current = setTimeout(() => setFeedback(null), 1500)
@@ -268,6 +250,16 @@ export default function FracStrike({ onBack }) {
 
       setAnimating(false)
     }, 900)
+  }
+
+  function handleNext() {
+    const nextIndex = problemIndex + 1
+    if (nextIndex >= PROBLEMS_PER_LEVEL) {
+      setShowResult(true)
+    } else {
+      setProblemIndex(nextIndex)
+      startProblem(levelId)
+    }
   }
 
   const isExpert = getLevels().find((l) => l.id === levelId)?.expert
@@ -413,6 +405,17 @@ export default function FracStrike({ onBack }) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* "Suivant" button when fraction is fully simplified */}
+      {solved && (
+        <button
+          onClick={handleNext}
+          className="mx-auto mb-4 px-8 py-3 rounded-xl font-bold text-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 active:scale-[0.97] transition-all text-white flex items-center gap-2"
+        >
+          Suivant
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      )}
 
       {/* Hint button (not in expert mode) */}
       {!isFullySimplified(currentNum, currentDen) && !isExpert && (
