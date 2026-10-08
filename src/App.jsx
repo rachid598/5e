@@ -25,6 +25,8 @@ export default function App() {
 
   if (currentModule === 'fractions-ideas') {
     return <FractionsIdeas onBack={() => setCurrentModule(null)} />
+  }
+
   if (currentModule === 'prio-calcul') {
     return <PrioCalcul onBack={() => setCurrentModule(null)} />
   }
