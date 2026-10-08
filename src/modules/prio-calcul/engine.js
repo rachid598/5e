@@ -40,13 +40,13 @@ const LEVELS = [
     id: 4,
     name: 'Parenthèses',
     description: 'Une paire de parenthèses',
-    enabled: false,
+    enabled: true,
   },
   {
     id: 5,
     name: 'Expert',
     description: 'Parenthèses multiples ou imbriquées',
-    enabled: false,
+    enabled: true,
   },
 ]
 
