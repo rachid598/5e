@@ -7,7 +7,7 @@ const modules = [
     description: 'Simplifie les fractions en trouvant les diviseurs communs !',
     icon: Swords,
     color: 'from-indigo-500 to-purple-600',
-    active: true,
+    active: false,
   },
   {
     id: 'prio-calcul',
@@ -23,7 +23,7 @@ const modules = [
     description: 'Maîtrise les critères de divisibilité !',
     icon: Grid3X3,
     color: 'from-emerald-500 to-teal-600',
-    active: true,
+    active: false,
   },
   {
     id: 'proportionnalite',
@@ -31,7 +31,7 @@ const modules = [
     description: 'Tableaux de proportionnalité & produits en croix',
     icon: Scale,
     color: 'from-amber-500 to-orange-600',
-    active: true,
+    active: false,
   },
   {
     id: 'volumes-aires',
@@ -39,7 +39,7 @@ const modules = [
     description: 'Calcule aires et volumes avec visualisation 3D',
     icon: Box,
     color: 'from-pink-500 to-rose-600',
-    active: true,
+    active: false,
   },
 ]
 
@@ -67,7 +67,7 @@ export default function Hub({ player, onNavigate, onLogout }) {
 
       {/* Module grid */}
       <div className="grid gap-4">
-        {modules.map((mod) => {
+        {modules.filter((mod) => mod.active).map((mod) => {
           const Icon = mod.icon
           return (
             <button

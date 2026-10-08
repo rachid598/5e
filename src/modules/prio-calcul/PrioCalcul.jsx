@@ -8,6 +8,7 @@ import {
   rebuildTokens,
   isComplete,
   getLevels,
+  getWrongOpMessage,
 } from './engine'
 import ExpressionDisplay from './components/ExpressionDisplay'
 import StepChain from './components/StepChain'
@@ -97,7 +98,7 @@ export default function PrioCalcul({ onBack }) {
         setFeedback(null)
         setKeypadValue('')
       } else {
-        setFeedback({ type: 'error', message: 'Ce n\'est pas la priorité !' })
+        setFeedback({ type: 'error', message: getWrongOpMessage(tokens, opId) })
         feedbackTimeout.current = setTimeout(() => setFeedback(null), 2000)
       }
     } else if (phase === 'compute') {
@@ -107,7 +108,7 @@ export default function PrioCalcul({ onBack }) {
         setKeypadValue('')
         setFeedback(null)
       } else {
-        setFeedback({ type: 'error', message: 'Ce n\'est pas la priorité !' })
+        setFeedback({ type: 'error', message: getWrongOpMessage(tokens, opId) })
         feedbackTimeout.current = setTimeout(() => setFeedback(null), 2000)
       }
     }

@@ -1,6 +1,7 @@
 /**
  * Prio-Calcul engine
- * Generates arithmetic expressions and manages priority-based simplification.
+ * Generates arithmetic expressions (no parentheses for now) and manages
+ * priority-based simplification: × and : before + and −, then left to right.
  */
 
 let opCounter = 0
@@ -15,24 +16,23 @@ function tok(type, value, id) {
 }
 function num(v) { return tok('number', v) }
 function op(v) { return tok('operator', v, nextOpId()) }
-function paren(v) { return tok('paren', v) }
 
 // --- Levels ---
 const LEVELS = [
   {
     id: 1,
     name: 'Facile',
-    description: '2 opérations, sans parenthèses',
+    description: 'De gauche à droite (+ − ou × :)',
   },
   {
     id: 2,
     name: 'Moyen',
-    description: 'Avec parenthèses',
+    description: 'Une multiplication ou une division',
   },
   {
     id: 3,
     name: 'Difficile',
-    description: 'Parenthèses et priorités multiples',
+    description: 'Plusieurs priorités dans le même calcul',
   },
 ]
 
@@ -53,231 +53,63 @@ function compute(a, operator, b) {
     case '+': return a + b
     case '-': return a - b
     case '×': return a * b
+    case ':': return b === 0 ? null : a / b
     default: return 0
   }
 }
 
-// --- Expression generation ---
-
-function generateLevel1() {
-  // 2 operations, no parentheses, at least one ×
-  // Pattern: a op1 b op2 c where one op is ×
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const mulPos = Math.random() < 0.5 ? 0 : 1
-    let a, b, c, op1v, op2v
-
-    if (mulPos === 0) {
-      // a × b op2 c
-      a = randInt(2, 9)
-      b = randInt(2, 5)
-      c = randInt(1, 9)
-      op1v = '×'
-      op2v = pick(['+', '-'])
-    } else {
-      // a op1 b × c
-      a = randInt(1, 9)
-      b = randInt(2, 5)
-      c = randInt(2, 5)
-      op1v = pick(['+', '-'])
-      op2v = '×'
-    }
-
-    // Compute respecting priority
-    let result
-    if (mulPos === 0) {
-      result = compute(compute(a, '×', b), op2v, c)
-    } else {
-      result = compute(a, op1v, compute(b, '×', c))
-    }
-
-    if (result >= 0 && result <= 100) {
-      return {
-        tokens: [num(a), op(op1v), num(b), op(op2v), num(c)],
-        answer: result,
-      }
-    }
-  }
-  // Fallback
-  return {
-    tokens: [num(3), op('+'), num(4), op('×'), num(2)],
-    answer: 11,
-  }
-}
-
-function generateLevel2() {
-  // Parentheses: (a op1 b) op2 c  OR  c op2 (a op1 b)
-  for (let attempt = 0; attempt < 50; attempt++) {
-    const side = Math.random() < 0.5 ? 'left' : 'right'
-    const a = randInt(1, 9)
-    const b = randInt(1, 9)
-    const c = randInt(2, 5)
-    const innerOp = pick(['+', '-'])
-    const outerOp = '×'
-
-    const innerResult = compute(a, innerOp, b)
-    if (innerResult <= 0) continue
-
-    let result, tokens
-    if (side === 'left') {
-      result = compute(innerResult, outerOp, c)
-      tokens = [paren('('), num(a), op(innerOp), num(b), paren(')'), op(outerOp), num(c)]
-    } else {
-      result = compute(c, outerOp, innerResult)
-      tokens = [num(c), op(outerOp), paren('('), num(a), op(innerOp), num(b), paren(')')]
-    }
-
-    if (result >= 0 && result <= 100) {
-      return { tokens, answer: result }
-    }
-  }
-  return {
-    tokens: [paren('('), num(3), op('+'), num(4), paren(')'), op('×'), num(2)],
-    answer: 14,
-  }
-}
-
-function generateLevel3() {
-  const strategy = pick(['double-paren', 'nested', 'mixed'])
-
-  for (let attempt = 0; attempt < 50; attempt++) {
-    if (strategy === 'double-paren') {
-      // (a op1 b) op2 (c op3 d)
-      const a = randInt(1, 8)
-      const b = randInt(1, 8)
-      const c = randInt(1, 8)
-      const d = randInt(1, 8)
-      const op1v = pick(['+', '-'])
-      const op3v = pick(['+', '-'])
-      const op2v = '×'
-
-      const left = compute(a, op1v, b)
-      const right = compute(c, op3v, d)
-      if (left <= 0 || right <= 0) continue
-      const result = compute(left, op2v, right)
-
-      if (result >= 0 && result <= 150) {
-        return {
-          tokens: [
-            paren('('), num(a), op(op1v), num(b), paren(')'),
-            op(op2v),
-            paren('('), num(c), op(op3v), num(d), paren(')'),
-          ],
-          answer: result,
-        }
-      }
-    } else if (strategy === 'nested') {
-      // a × (b + c × d) — nested priority inside parens
-      const a = randInt(2, 4)
-      const b = randInt(1, 6)
-      const c = randInt(2, 4)
-      const d = randInt(2, 4)
-      const op1v = '×'
-      const op2v = pick(['+', '-'])
-      const op3v = '×'
-
-      const inner = compute(c, op3v, d)
-      const parenResult = compute(b, op2v, inner)
-      if (parenResult <= 0) continue
-      const result = compute(a, op1v, parenResult)
-
-      if (result >= 0 && result <= 150) {
-        return {
-          tokens: [
-            num(a), op(op1v),
-            paren('('), num(b), op(op2v), num(c), op(op3v), num(d), paren(')'),
-          ],
-          answer: result,
-        }
-      }
-    } else {
-      // (a + b) × c - d
-      const a = randInt(1, 8)
-      const b = randInt(1, 8)
-      const c = randInt(2, 5)
-      const d = randInt(1, 9)
-      const op1v = pick(['+', '-'])
-      const op2v = '×'
-      const op3v = pick(['+', '-'])
-
-      const parenResult = compute(a, op1v, b)
-      if (parenResult <= 0) continue
-      const mid = compute(parenResult, op2v, c)
-      const result = compute(mid, op3v, d)
-
-      if (result >= 0 && result <= 150) {
-        return {
-          tokens: [
-            paren('('), num(a), op(op1v), num(b), paren(')'),
-            op(op2v), num(c), op(op3v), num(d),
-          ],
-          answer: result,
-        }
-      }
-    }
-  }
-  // Fallback
-  return {
-    tokens: [
-      paren('('), num(3), op('+'), num(2), paren(')'),
-      op('×'),
-      paren('('), num(4), op('-'), num(1), paren(')'),
-    ],
-    answer: 15,
-  }
-}
-
-// Deck system for anti-repeat
-const generators = { 1: generateLevel1, 2: generateLevel2, 3: generateLevel3 }
-
-export function generateExpression(levelId) {
-  const gen = generators[levelId] || generateLevel1
-  return gen()
+function getOpPriority(v) {
+  return v === '×' || v === ':' ? 2 : 1
 }
 
 // --- Priority detection ---
 
-function getOpPriority(v) {
-  if (v === '×' || v === '÷') return 2
-  return 1
+/**
+ * Operators the student may pick right now: deepest parentheses first, then
+ * × and : before + and −, and among equal priorities the leftmost one only.
+ */
+export function findSelectableOps(tokens) {
+  let depth = 0
+  const ops = []
+  tokens.forEach((t, index) => {
+    if (t.type === 'paren') {
+      depth += t.value === '(' ? 1 : -1
+    } else if (t.type === 'operator') {
+      ops.push({ index, depth, priority: getOpPriority(t.value), id: t.id })
+    }
+  })
+  if (ops.length === 0) return []
+
+  const maxDepth = Math.max(...ops.map((o) => o.depth))
+  const atDepth = ops.filter((o) => o.depth === maxDepth)
+  const best = Math.max(...atDepth.map((o) => o.priority))
+
+  return atDepth
+    .filter((o) => o.priority === best)
+    .filter((o) => {
+      for (let j = o.index - 1; j >= 0; j--) {
+        if (tokens[j].type === 'paren') return true
+        if (tokens[j].type === 'operator') {
+          return getOpPriority(tokens[j].value) !== o.priority
+        }
+      }
+      return true
+    })
+    .map((o) => o.id)
 }
 
-export function findSelectableOps(tokens) {
-  // 1. Find max paren depth among operators
-  let maxDepth = 0
-  let depth = 0
-  for (const t of tokens) {
-    if (t.type === 'paren' && t.value === '(') depth++
-    if (t.type === 'paren' && t.value === ')') depth--
-    if (t.type === 'operator' && depth > maxDepth) maxDepth = depth
+/** Message shown when the student taps an operator that is not the right one. */
+export function getWrongOpMessage(tokens, opId) {
+  const chosen = tokens.find((t) => t.id === opId)
+  const expected = tokens.find((t) => t.id === findSelectableOps(tokens)[0])
+  if (
+    chosen &&
+    expected &&
+    getOpPriority(chosen.value) === getOpPriority(expected.value)
+  ) {
+    return 'On calcule de gauche à droite !'
   }
-
-  // If no operator is inside parens, maxDepth stays 0 — that's fine,
-  // we look at operators at depth 0
-
-  // 2. Among operators at maxDepth, find highest priority
-  depth = 0
-  let bestPriority = -1
-  for (const t of tokens) {
-    if (t.type === 'paren' && t.value === '(') depth++
-    if (t.type === 'paren' && t.value === ')') depth--
-    if (t.type === 'operator' && depth === maxDepth) {
-      const p = getOpPriority(t.value)
-      if (p > bestPriority) bestPriority = p
-    }
-  }
-
-  // 3. Collect all operator ids at maxDepth with bestPriority
-  depth = 0
-  const ids = []
-  for (const t of tokens) {
-    if (t.type === 'paren' && t.value === '(') depth++
-    if (t.type === 'paren' && t.value === ')') depth--
-    if (t.type === 'operator' && depth === maxDepth && getOpPriority(t.value) === bestPriority) {
-      ids.push(t.id)
-    }
-  }
-
-  return ids
+  return "Ce n'est pas la priorité !"
 }
 
 // --- Compute a step ---
@@ -286,7 +118,6 @@ export function computeStep(tokens, opId) {
   const idx = tokens.findIndex((t) => t.id === opId)
   if (idx < 0) return null
 
-  // Find left and right number neighbors
   let leftIdx = idx - 1
   while (leftIdx >= 0 && tokens[leftIdx].type !== 'number') leftIdx--
   let rightIdx = idx + 1
@@ -303,7 +134,6 @@ export function rebuildTokens(tokens, opId, result) {
   const idx = tokens.findIndex((t) => t.id === opId)
   if (idx < 0) return tokens
 
-  // Find left number and right number (skip parens between)
   let leftIdx = idx - 1
   while (leftIdx >= 0 && tokens[leftIdx].type !== 'number') leftIdx--
   let rightIdx = idx + 1
@@ -311,19 +141,16 @@ export function rebuildTokens(tokens, opId, result) {
 
   if (leftIdx < 0 || rightIdx >= tokens.length) return tokens
 
-  // Replace from leftIdx to rightIdx with a single number
   const newTokens = [
     ...tokens.slice(0, leftIdx),
     num(result),
     ...tokens.slice(rightIdx + 1),
   ]
 
-  // Remove empty parentheses: ( number ) → number
   return stripEmptyParens(newTokens)
 }
 
 function stripEmptyParens(tokens) {
-  // Repeat until no more empty parens
   let changed = true
   let result = tokens
   while (changed) {
@@ -349,6 +176,99 @@ export function isComplete(tokens) {
   const numbers = tokens.filter((t) => t.type === 'number')
   const ops = tokens.filter((t) => t.type === 'operator')
   return numbers.length === 1 && ops.length === 0
+}
+
+// --- Expression generation ---
+
+/**
+ * Solve the expression with the same rules as the student.
+ * Returns the final value, or null if a step is not a positive integer
+ * (inexact division, negative or zero result, or a number that is too big).
+ */
+function simulate(tokens) {
+  let cur = tokens
+  while (!isComplete(cur)) {
+    const ids = findSelectableOps(cur)
+    if (ids.length === 0) return null
+    const value = computeStep(cur, ids[0])
+    if (value === null || !Number.isInteger(value) || value <= 0 || value > 200) {
+      return null
+    }
+    cur = rebuildTokens(cur, ids[0], value)
+  }
+  return cur[0].value
+}
+
+// Chain of terms joined by + or −. A term is a number "N" or a product/quotient "P".
+function buildFromTerms(shape, maxAdditive, divisionChance) {
+  const tokens = []
+  shape.forEach((kind, i) => {
+    if (i > 0) tokens.push(op(pick(['+', '-'])))
+    if (kind === 'N') {
+      tokens.push(num(randInt(2, maxAdditive)))
+    } else if (Math.random() < divisionChance) {
+      const divisor = randInt(2, 9)
+      tokens.push(num(divisor * randInt(2, 9)), op(':'), num(divisor))
+    } else {
+      tokens.push(num(randInt(2, 9)), op('×'), num(randInt(2, 9)))
+    }
+  })
+  return tokens
+}
+
+// Level 1: 4 numbers, only + − or only × : (left to right)
+function buildLeftToRight() {
+  if (Math.random() < 0.5) {
+    const tokens = [num(randInt(2, 30))]
+    const operators = Array.from({ length: 3 }, () => pick(['+', '-']))
+    if (!operators.includes('-')) operators[randInt(0, 2)] = '-'
+    operators.forEach((o) => tokens.push(op(o), num(randInt(2, 30))))
+    return tokens
+  }
+  const operators = Array.from({ length: 3 }, () => pick(['×', ':']))
+  if (!operators.includes(':')) operators[randInt(0, 2)] = ':'
+  const tokens = [num(randInt(2, 60))]
+  operators.forEach((o) => tokens.push(op(o), num(randInt(2, 9))))
+  return tokens
+}
+
+const SHAPES = {
+  2: [['N', 'P'], ['P', 'N']],
+  3: [['N', 'P', 'N'], ['P', 'P'], ['P', 'N', 'P'], ['N', 'P', 'P'], ['P', 'N', 'N'], ['N', 'N', 'P']],
+}
+
+function buildExpression(levelId) {
+  if (levelId === 1) return buildLeftToRight()
+  if (levelId === 2) return buildFromTerms(pick(SHAPES[2]), 20, 0.4)
+  return buildFromTerms(pick(SHAPES[3]), 30, 0.4)
+}
+
+const FALLBACKS = {
+  1: () => [num(8), op('-'), num(3), op('+'), num(16), op('+'), num(4)],
+  2: () => [num(5), op('+'), num(3), op('×'), num(5)],
+  3: () => [num(9), op('+'), num(7), op('×'), num(4), op('+'), num(6)],
+}
+
+const recent = []
+
+export function generateExpression(levelId) {
+  const level = LEVELS.some((l) => l.id === levelId) ? levelId : 1
+
+  for (let attempt = 0; attempt < 500; attempt++) {
+    const tokens = buildExpression(level)
+    const answer = simulate(tokens)
+    if (answer === null || (level === 1 && answer > 100)) continue
+
+    const key = tokensToString(tokens)
+    if (recent.includes(key)) continue
+    recent.push(key)
+    if (recent.length > 15) recent.shift()
+
+    return { tokens, answer }
+  }
+
+  const tokens = FALLBACKS[level]()
+  return { tokens, answer: simulate(tokens) }
 }
 
 // --- Render tokens to string (for display) ---

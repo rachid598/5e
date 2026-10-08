@@ -37,8 +37,8 @@ export default function HelpModal({ open, onClose }) {
               2
             </span>
             <div>
-              <p className="font-semibold text-primary-light">Multiplications ×</p>
-              <p className="text-sm text-slate-400">Avant les additions et soustractions.</p>
+              <p className="font-semibold text-primary-light">Multiplications × et divisions :</p>
+              <p className="text-sm text-slate-400">Avant les additions et soustractions, de gauche à droite.</p>
             </div>
           </li>
           <li className="flex items-start gap-3">
