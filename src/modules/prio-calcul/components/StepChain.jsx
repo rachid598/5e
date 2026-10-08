@@ -15,14 +15,14 @@ export default function StepChain({ steps }) {
   if (steps.length === 0) return null
 
   return (
-    <div className="bg-surface/50 rounded-2xl p-4 min-h-[80px] overflow-y-auto max-h-[200px]">
-      <div className="space-y-2 font-mono text-xl">
+    <div className="bg-surface/50 rounded-2xl p-3 sm:p-4 min-h-[80px] overflow-auto max-h-[28dvh]">
+      <div className="space-y-2 font-mono text-lg min-[400px]:text-xl w-max min-w-full">
         {steps.map((tokens, i) => (
           <div key={i} className="flex items-center gap-3">
             <span className="w-6 text-right text-slate-500 shrink-0">
               {i > 0 ? '=' : ''}
             </span>
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-0.5 flex-nowrap">
               {tokens.map((token, j) => {
                 if (token.type === 'paren') {
                   return (

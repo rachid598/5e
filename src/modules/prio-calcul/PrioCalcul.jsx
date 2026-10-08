@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { ArrowLeft, ArrowRight, Trophy, RotateCcw, Star, Zap, HelpCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Trophy, RotateCcw, Star, Zap, HelpCircle, Brackets, Crown } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import {
   generateExpression,
@@ -33,6 +33,8 @@ function LevelSelector({ onSelect }) {
               {level.id === 1 && <Star className="w-5 h-5 text-white" />}
               {level.id === 2 && <Zap className="w-5 h-5 text-white" />}
               {level.id === 3 && <Trophy className="w-5 h-5 text-white" />}
+              {level.id === 4 && <Brackets className="w-5 h-5 text-white" />}
+              {level.id === 5 && <Crown className="w-5 h-5 text-white" />}
             </div>
             <div>
               <p className="font-semibold">{level.name}</p>
@@ -188,7 +190,7 @@ export default function PrioCalcul({ onBack }) {
   // Result screen
   if (showResult) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="min-h-dvh flex flex-col items-center justify-center p-4">
         <div className="bg-surface rounded-2xl p-8 max-w-sm w-full text-center">
           <Trophy
             className={`w-16 h-16 mx-auto mb-4 ${perfect ? 'text-accent' : 'text-primary-light'}`}
@@ -230,11 +232,11 @@ export default function PrioCalcul({ onBack }) {
   // Level selection
   if (!levelId) {
     return (
-      <div className="min-h-screen p-4">
+      <div className="min-h-dvh p-4">
         <header className="flex items-center gap-3 mb-6 pt-2">
           <button
             onClick={onBack}
-            className="p-2 rounded-xl bg-surface hover:bg-surface-light transition-colors"
+            className="p-2.5 rounded-xl bg-surface hover:bg-surface-light transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -247,13 +249,13 @@ export default function PrioCalcul({ onBack }) {
 
   // Main game UI
   return (
-    <div className="min-h-screen flex flex-col p-4">
+    <div className="min-h-dvh flex flex-col p-4">
       {/* Header */}
       <header className="flex items-center justify-between mb-4 pt-2">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
-            className="p-2 rounded-xl bg-surface hover:bg-surface-light transition-colors"
+            className="p-2.5 rounded-xl bg-surface hover:bg-surface-light transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -267,7 +269,7 @@ export default function PrioCalcul({ onBack }) {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowHelp(true)}
-            className="p-2 rounded-xl bg-surface hover:bg-surface-light transition-colors"
+            className="p-2.5 rounded-xl bg-surface hover:bg-surface-light transition-colors"
           >
             <HelpCircle className="w-5 h-5 text-slate-400" />
           </button>
@@ -364,7 +366,7 @@ export default function PrioCalcul({ onBack }) {
                   if (next.length <= 4) setKeypadValue(next)
                 }}
                 disabled={waiting}
-                className="py-3 rounded-xl bg-surface-light text-lg font-semibold active:bg-primary/30 transition-colors disabled:opacity-40"
+                className="min-h-12 py-3 rounded-xl bg-surface-light text-lg font-semibold active:bg-primary/30 transition-colors disabled:opacity-40"
               >
                 {n}
               </button>
@@ -373,7 +375,7 @@ export default function PrioCalcul({ onBack }) {
               type="button"
               onClick={() => !waiting && setKeypadValue('')}
               disabled={waiting}
-              className="py-3 rounded-xl bg-surface text-sm font-medium text-slate-400 active:bg-red-900/30 transition-colors disabled:opacity-40"
+              className="min-h-12 py-3 rounded-xl bg-surface text-sm font-medium text-slate-400 active:bg-red-900/30 transition-colors disabled:opacity-40"
             >
               C
             </button>
@@ -385,7 +387,7 @@ export default function PrioCalcul({ onBack }) {
                 if (next.length <= 4) setKeypadValue(next)
               }}
               disabled={waiting}
-              className="py-3 rounded-xl bg-surface-light text-lg font-semibold active:bg-primary/30 transition-colors disabled:opacity-40"
+              className="min-h-12 py-3 rounded-xl bg-surface-light text-lg font-semibold active:bg-primary/30 transition-colors disabled:opacity-40"
             >
               0
             </button>
@@ -393,7 +395,7 @@ export default function PrioCalcul({ onBack }) {
               type="button"
               onClick={() => !waiting && setKeypadValue(keypadValue.slice(0, -1))}
               disabled={waiting}
-              className="py-3 rounded-xl bg-surface text-slate-400 flex items-center justify-center active:bg-red-900/30 transition-colors disabled:opacity-40"
+              className="min-h-12 py-3 rounded-xl bg-surface text-slate-400 flex items-center justify-center active:bg-red-900/30 transition-colors disabled:opacity-40"
             >
               ⌫
             </button>
@@ -416,7 +418,7 @@ export default function PrioCalcul({ onBack }) {
       )}
 
       {/* Bottom padding */}
-      <div className="h-4" />
+      <div className="h-4 pb-[env(safe-area-inset-bottom)]" />
 
       {/* Help modal */}
       <HelpModal open={showHelp} onClose={() => setShowHelp(false)} />

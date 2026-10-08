@@ -9,7 +9,7 @@ export default function HelpModal({ open, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-surface rounded-2xl p-6 w-full max-w-sm shadow-xl"
+        className="bg-surface rounded-2xl p-5 sm:p-6 w-full max-w-sm max-h-[90dvh] overflow-y-auto shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
